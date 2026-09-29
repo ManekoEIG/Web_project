@@ -1,1 +1,383 @@
-hi
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Пит-лейн — магазин для фанатов автоспорта</title>
+  <meta name="description" content="Одежда, модели болидов и коллекционные вещи для болельщиков гонок. Отправка в день заказа.">
+  <meta name="theme-color" content="#15151e">
+  <meta property="og:title" content="Пит-лейн — магазин для фанатов автоспорта">
+  <meta property="og:description" content="Одежда, модели болидов и коллекционные вещи для болельщиков гонок.">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%2315151e'/%3E%3Cpath d='M7 22 14 10h13l-7 12z' fill='%23e10600'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@0,400;0,500;0,700;1,700;1,800;1,900&display=swap" rel="stylesheet">
+</head>
+<body>
+  <a class="skip-link" href="#catalog">Перейти к каталогу</a>
+
+  <header class="site-header">
+    <div class="site-header__inner">
+      <a class="logo" href="#top" aria-label="Пит-лейн, на главную">
+        <span class="logo__mark" aria-hidden="true"></span>
+        <span class="logo__text">Пит-лейн</span>
+      </a>
+
+      <nav class="site-nav" aria-label="Основная навигация">
+        <ul>
+          <li><a href="#catalog">Каталог</a></li>
+          <li><a href="#delivery">Доставка</a></li>
+          <li><a href="#contacts">Контакты</a></li>
+        </ul>
+      </nav>
+
+      <button class="cart-button" type="button" id="cart-open" aria-haspopup="dialog" aria-controls="cart-drawer">
+        <svg class="cart-button__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h2l2.4 10.2a1 1 0 0 0 1 .8h9.2a1 1 0 0 0 1-.8L20 8H6.2"/><circle cx="9" cy="19" r="1.5"/><circle cx="17" cy="19" r="1.5"/></svg>
+        <span>Корзина</span>
+        <span class="cart-button__count" id="cart-count" aria-label="товаров: 0">0</span>
+      </button>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero__inner">
+        <div class="hero__text">
+          <p class="hero__kicker">Сезон 2026</p>
+          <h1 id="hero-title">Экипировка для&nbsp;тех, кто&nbsp;не&nbsp;пропускает старт</h1>
+          <p class="hero__lead">Одежда, модели болидов и коллекционные вещи для болельщиков. Отправляем в день заказа, по Санкт-Петербургу привезём завтра.</p>
+          <a class="button button--primary button--large" href="#catalog">Смотреть каталог</a>
+        </div>
+        <svg class="hero__car" viewBox="0 0 640 230" aria-hidden="true">
+          <path d="M22 156h98l40-34h128l30-46h70l18 36h110l12-52h44v96z" fill="#15151e"/>
+          <path d="M24 156h96l40-34h128" stroke="#fff" stroke-width="6" fill="none"/>
+          <path d="M300 122h270" stroke="#e10600" stroke-width="10"/>
+          <path d="M320 78c18-24 62-24 80 0" stroke="#fff" stroke-width="8" fill="none" stroke-linecap="round"/>
+          <rect x="558" y="30" width="60" height="18" fill="#15151e"/><rect x="558" y="30" width="60" height="5" fill="#fff"/>
+          <rect x="10" y="160" width="112" height="14" fill="#15151e"/><rect x="10" y="160" width="112" height="4" fill="#fff"/>
+          <circle cx="152" cy="176" r="48" fill="#0b0b10"/><circle cx="152" cy="176" r="48" fill="none" stroke="#fff" stroke-width="4" stroke-dasharray="4 18"/><circle cx="152" cy="176" r="18" fill="#c9c9d0"/>
+          <circle cx="484" cy="172" r="54" fill="#0b0b10"/><circle cx="484" cy="172" r="54" fill="none" stroke="#fff" stroke-width="4" stroke-dasharray="4 20"/><circle cx="484" cy="172" r="20" fill="#c9c9d0"/>
+          <text x="232" y="150" fill="#fff" font-family="Exo 2, sans-serif" font-style="italic" font-weight="900" font-size="34">26</text>
+        </svg>
+      </div>
+      <div class="hero__kerb" aria-hidden="true"></div>
+    </section>
+
+    <section class="catalog" id="catalog" aria-labelledby="catalog-title">
+      <div class="catalog__head">
+        <h2 id="catalog-title" class="section-title">Каталог</h2>
+
+        <label class="sort">
+          <span class="visually-hidden">Сортировка</span>
+          <select id="sort">
+            <option value="default">По умолчанию</option>
+            <option value="price-asc">Сначала дешевле</option>
+            <option value="price-desc">Сначала дороже</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="filters" role="group" aria-label="Категория">
+        <button type="button" class="tab" data-filter="all" aria-pressed="true">Все товары</button>
+        <button type="button" class="tab" data-filter="apparel" aria-pressed="false">Одежда</button>
+        <button type="button" class="tab" data-filter="collect" aria-pressed="false">Коллекционное</button>
+        <button type="button" class="tab" data-filter="access" aria-pressed="false">Аксессуары</button>
+      </div>
+
+      <p class="catalog__status" id="catalog-status" role="status">Показано 8 товаров</p>
+
+      <ul class="product-list" id="product-list">
+        <li>
+          <article class="product" data-id="poleposition" data-type="apparel" aria-labelledby="p-poleposition">
+            <div class="product__image" aria-hidden="true"><svg viewBox="0 0 200 150"><path d="M46 96c0-34 24-56 56-56s52 20 54 50z" fill="#15151e"/><path d="M60 72c14-20 60-26 84-6" stroke="#e10600" stroke-width="7" fill="none"/><path d="M40 96h118c22 0 34 6 34 12H44c-6 0-8-6-4-12z" fill="#e10600"/><circle cx="101" cy="40" r="5" fill="#e10600"/></svg></div>
+            <div class="product__body">
+              <p class="product__type">Одежда</p>
+              <h3 class="product__title" id="p-poleposition">Кепка «Поул-позишн»</h3>
+              <p class="product__desc">Шестипанельная, хлопок, регулируемая застёжка.</p>
+              <footer class="product__footer">
+                <p class="product__price"><data value="2490">2 490 ₽</data> <span class="product__weight">Один размер</span></p>
+                <div class="product__action">
+                  <button class="button button--primary product__add" type="button" aria-label="Добавить в корзину: Кепка «Поул-позишн»">В корзину</button>
+                </div>
+              </footer>
+            </div>
+          </article>
+        </li>
+
+        <li>
+          <article class="product" data-id="pitcrew" data-type="apparel" aria-labelledby="p-pitcrew">
+            <div class="product__image" aria-hidden="true"><svg viewBox="0 0 200 150"><path d="M70 30c8-12 52-12 60 0l30 16 22 58-20 8-14-34v68H52V78l-14 34-20-8 22-58z" fill="#15151e"/><path d="M78 30c4 22 40 22 44 0" stroke="#3a3a46" stroke-width="5" fill="none"/><path d="M64 96h72" stroke="#e10600" stroke-width="8"/><path d="M92 50v22M108 50v22" stroke="#9a9aa2" stroke-width="3" stroke-linecap="round"/></svg></div>
+            <div class="product__body">
+              <p class="product__type">Одежда</p>
+              <h3 class="product__title" id="p-pitcrew">Худи «Пит-крю»</h3>
+              <p class="product__desc">Плотный футер 380 г/м², флисовый начёс внутри.</p>
+              <footer class="product__footer">
+                <p class="product__price"><data value="5990">5 990 ₽</data> <span class="product__weight">S–XXL</span></p>
+                <div class="product__action">
+                  <button class="button button--primary product__add" type="button" aria-label="Добавить в корзину: Худи «Пит-крю»">В корзину</button>
+                </div>
+              </footer>
+            </div>
+          </article>
+        </li>
+
+        <li>
+          <article class="product" data-id="lightsout" data-type="apparel" aria-labelledby="p-lightsout">
+            <div class="product__image" aria-hidden="true"><svg viewBox="0 0 200 150"><path d="M76 24h48l48 22-14 30-22-10v72H64V66L42 76 28 46z" fill="#fff" stroke="#15151e" stroke-width="4" stroke-linejoin="round"/><path d="M84 24c4 12 28 12 32 0" stroke="#15151e" stroke-width="4" fill="none"/><path d="M64 70l72 36M64 84l72 36" stroke="#e10600" stroke-width="7"/></svg></div>
+            <div class="product__body">
+              <p class="product__type">Одежда</p>
+              <h3 class="product__title" id="p-lightsout">Футболка «Огни погасли»</h3>
+              <p class="product__desc">Хлопок с эластаном, принт с гоночными полосами.</p>
+              <footer class="product__footer">
+                <p class="product__price"><data value="2790">2 790 ₽</data> <span class="product__weight">S–XXL</span></p>
+                <div class="product__action">
+                  <button class="button button--primary product__add" type="button" aria-label="Добавить в корзину: Футболка «Огни погасли»">В корзину</button>
+                </div>
+              </footer>
+            </div>
+          </article>
+        </li>
+
+        <li>
+          <article class="product" data-id="model143" data-type="collect" aria-labelledby="p-model143">
+            <div class="product__image" aria-hidden="true"><svg viewBox="0 0 200 150"><path d="M14 94h32l14-12h40l10-16h22l6 12h34l4-18h14v34H14z" fill="#15151e"/><path d="M60 82h40l6-8" stroke="#e10600" stroke-width="5" fill="none"/><path d="M106 70c6-8 20-8 26 0" stroke="#3a3a46" stroke-width="4" fill="none"/><rect x="170" y="56" width="16" height="6" fill="#e10600"/><rect x="8" y="96" width="36" height="6" fill="#e10600"/><circle cx="54" cy="104" r="17" fill="#15151e"/><circle cx="54" cy="104" r="7" fill="#9a9aa2"/><circle cx="152" cy="102" r="20" fill="#15151e"/><circle cx="152" cy="102" r="8" fill="#9a9aa2"/></svg></div>
+            <div class="product__body">
+              <p class="product__type">Коллекционное</p>
+              <h3 class="product__title" id="p-model143">Модель болида 1:43</h3>
+              <p class="product__desc">Литой металл, съёмный обтекатель, подставка из акрила.</p>
+              <footer class="product__footer">
+                <p class="product__price"><data value="4490">4 490 ₽</data> <span class="product__weight">Длина 13 см</span></p>
+                <div class="product__action">
+                  <button class="button button--primary product__add" type="button" aria-label="Добавить в корзину: Модель болида 1:43">В корзину</button>
+                </div>
+              </footer>
+            </div>
+          </article>
+        </li>
+
+        <li>
+          <article class="product" data-id="helmet12" data-type="collect" aria-labelledby="p-helmet12">
+            <div class="product__image" aria-hidden="true"><svg viewBox="0 0 200 150"><path d="M44 104c-6-50 26-80 66-80 36 0 56 26 54 64l-4 26H56z" fill="#e10600"/><path d="M84 62h76c4 0 6 4 5 8l-3 20H96c-8 0-14-6-14-14z" fill="#15151e"/><path d="M48 90c30-4 60-2 80 10" stroke="#fff" stroke-width="7" fill="none"/><path d="M56 114h104" stroke="#15151e" stroke-width="8"/></svg></div>
+            <div class="product__body">
+              <p class="product__type">Коллекционное</p>
+              <h3 class="product__title" id="p-helmet12">Шлем-реплика 1:2</h3>
+              <p class="product__desc">Ручная покраска, открывающийся визор.</p>
+              <footer class="product__footer">
+                <p class="product__price"><data value="12990">12 990 ₽</data> <span class="product__weight">Высота 15 см</span></p>
+                <div class="product__action">
+                  <button class="button button--primary product__add" type="button" aria-label="Добавить в корзину: Шлем-реплика 1:2">В корзину</button>
+                </div>
+              </footer>
+            </div>
+          </article>
+        </li>
+
+        <li>
+          <article class="product" data-id="slickclock" data-type="collect" aria-labelledby="p-slickclock">
+            <div class="product__image" aria-hidden="true"><svg viewBox="0 0 200 150"><circle cx="100" cy="75" r="58" fill="#15151e"/><circle cx="100" cy="75" r="58" fill="none" stroke="#2c2c38" stroke-width="10" stroke-dasharray="6 8"/><circle cx="100" cy="75" r="36" fill="#f4f4f4"/><path d="M100 75V50M100 75l16 10" stroke="#15151e" stroke-width="5" stroke-linecap="round"/><circle cx="100" cy="75" r="4" fill="#e10600"/><path d="M58 40a54 54 0 0 1 20-16" stroke="#e10600" stroke-width="6" fill="none" stroke-linecap="round"/></svg></div>
+            <div class="product__body">
+              <p class="product__type">Коллекционное</p>
+              <h3 class="product__title" id="p-slickclock">Часы «Слик»</h3>
+              <p class="product__desc">Настенные часы в корпусе из настоящей гоночной шины.</p>
+              <footer class="product__footer">
+                <p class="product__price"><data value="6490">6 490 ₽</data> <span class="product__weight">Ø 34 см</span></p>
+                <div class="product__action">
+                  <button class="button button--primary product__add" type="button" aria-label="Добавить в корзину: Часы «Слик»">В корзину</button>
+                </div>
+              </footer>
+            </div>
+          </article>
+        </li>
+
+        <li>
+          <article class="product" data-id="gloves" data-type="access" aria-labelledby="p-gloves">
+            <div class="product__image" aria-hidden="true"><svg viewBox="0 0 200 150"><path d="M70 130V86L52 64c-4-6 4-14 10-8l12 12V30c0-8 12-8 12 0v28-36c0-8 12-8 12 0v36-30c0-8 12-8 12 0v32-22c0-8 12-8 12 0v58l-8 32z" fill="#15151e"/><path d="M70 112h52" stroke="#e10600" stroke-width="10"/><path d="M80 60h6M92 60h6M104 60h6" stroke="#9a9aa2" stroke-width="3" stroke-linecap="round"/></svg></div>
+            <div class="product__body">
+              <p class="product__type">Аксессуары</p>
+              <h3 class="product__title" id="p-gloves">Перчатки механика</h3>
+              <p class="product__desc">Эластичная ткань, накладки на ладонях, сенсорные пальцы.</p>
+              <footer class="product__footer">
+                <p class="product__price"><data value="3290">3 290 ₽</data> <span class="product__weight">S–XL</span></p>
+                <div class="product__action">
+                  <button class="button button--primary product__add" type="button" aria-label="Добавить в корзину: Перчатки механика">В корзину</button>
+                </div>
+              </footer>
+            </div>
+          </article>
+        </li>
+
+        <li>
+          <article class="product" data-id="chequered" data-type="access" aria-labelledby="p-chequered">
+            <div class="product__image" aria-hidden="true"><svg viewBox="0 0 200 150"><defs><pattern id="chk" width="20" height="20" patternUnits="userSpaceOnUse"><rect width="20" height="20" fill="#fff"/><rect width="10" height="10" fill="#15151e"/><rect x="10" y="10" width="10" height="10" fill="#15151e"/></pattern></defs><path d="M52 24h110c-10 20 10 40 0 60H52z" fill="url(#chk)" stroke="#15151e" stroke-width="3"/><rect x="44" y="18" width="8" height="120" rx="3" fill="#e10600"/></svg></div>
+            <div class="product__body">
+              <p class="product__type">Аксессуары</p>
+              <h3 class="product__title" id="p-chequered">Финишный флаг</h3>
+              <p class="product__desc">Клетчатое полотно 90×60 см с флагштоком.</p>
+              <footer class="product__footer">
+                <p class="product__price"><data value="1490">1 490 ₽</data> <span class="product__weight">90×60 см</span></p>
+                <div class="product__action">
+                  <button class="button button--primary product__add" type="button" aria-label="Добавить в корзину: Финишный флаг">В корзину</button>
+                </div>
+              </footer>
+            </div>
+          </article>
+        </li>
+      </ul>
+    </section>
+
+    <section class="delivery" id="delivery" aria-labelledby="delivery-title">
+      <h2 id="delivery-title" class="section-title">Доставка и оплата</h2>
+      <dl class="delivery__list">
+        <div>
+          <dt>Курьер по Санкт-Петербургу</dt>
+          <dd>На следующий день, 350 ₽. Оплата картой или наличными при получении.</dd>
+        </div>
+        <div>
+          <dt>Пункт СДЭК по России</dt>
+          <dd>2–6 дней, 250 ₽. Оплата при получении.</dd>
+        </div>
+        <div>
+          <dt>Бесплатно от 7 000 ₽</dt>
+          <dd>Любым способом, если сумма товаров в заказе от 7 000 ₽.</dd>
+        </div>
+      </dl>
+    </section>
+  </main>
+
+  <footer class="site-footer" id="contacts">
+    <div class="site-footer__flag" aria-hidden="true"></div>
+    <div class="site-footer__inner">
+      <p class="logo logo--footer"><span class="logo__mark" aria-hidden="true"></span><span class="logo__text">Пит-лейн</span></p>
+      <address>
+        <p>Санкт-Петербург, Лиговский проспект, 30, ежедневно 10:00–22:00</p>
+        <p><a href="tel:+78120000000">+7 812 000-00-00</a>, <a href="mailto:hello@pitlane-shop.ru">hello@pitlane-shop.ru</a></p>
+      </address>
+      <p class="site-footer__copy"><small>© 2026 «Пит-лейн». Учебный проект, не связан с официальными гоночными сериями и командами.</small></p>
+    </div>
+  </footer>
+
+  <!-- Корзина -->
+  <dialog class="drawer" id="cart-drawer" aria-labelledby="cart-title">
+    <div class="drawer__inner">
+      <header class="drawer__header">
+        <h2 id="cart-title" tabindex="-1">Корзина</h2>
+        <button class="icon-button" type="button" data-close aria-label="Закрыть корзину">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+        </button>
+      </header>
+
+      <div class="drawer__body">
+        <ul class="cart-list" id="cart-list" aria-label="Товары в корзине"></ul>
+
+        <div class="cart-empty" id="cart-empty">
+          <p class="cart-empty__title">Корзина пуста</p>
+          <p>Выберите товары в каталоге, они появятся здесь.</p>
+          <button class="button button--secondary" type="button" id="cart-to-catalog">Перейти в каталог</button>
+        </div>
+      </div>
+
+      <footer class="drawer__footer" id="cart-footer">
+        <div class="free-delivery" id="free-delivery">
+          <p id="free-delivery-text"></p>
+          <div class="free-delivery__bar" aria-hidden="true"><span id="free-delivery-bar"></span></div>
+        </div>
+        <dl class="totals">
+          <div class="totals__grand"><dt>Итого</dt><dd id="cart-subtotal">0 ₽</dd></div>
+        </dl>
+        <button class="button button--primary button--wide" type="button" id="checkout-open">Оформить заказ</button>
+        <button class="link-button" type="button" id="cart-clear">Очистить корзину</button>
+      </footer>
+    </div>
+  </dialog>
+
+  <!-- Оформление заказа -->
+  <dialog class="modal" id="order-dialog" aria-labelledby="order-title">
+    <div class="modal__view" id="order-view">
+      <header class="modal__header">
+        <h2 id="order-title">Оформление заказа</h2>
+        <button class="icon-button" type="button" data-close aria-label="Закрыть">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+        </button>
+      </header>
+
+      <form class="order-form" id="order-form" novalidate>
+        <fieldset>
+          <legend>Получатель</legend>
+          <div class="field-row">
+            <div class="field">
+              <label for="name">Имя</label>
+              <input id="name" name="name" type="text" autocomplete="given-name" required minlength="2" aria-describedby="name-error">
+              <p class="field__error" id="name-error"></p>
+            </div>
+            <div class="field">
+              <label for="surname">Фамилия</label>
+              <input id="surname" name="surname" type="text" autocomplete="family-name" required minlength="2" aria-describedby="surname-error">
+              <p class="field__error" id="surname-error"></p>
+            </div>
+          </div>
+          <div class="field">
+            <label for="phone">Контактный телефон</label>
+            <input id="phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="+7 (900) 000-00-00" required pattern="\+7 \(\d{3}\) \d{3}-\d{2}-\d{2}" aria-describedby="phone-error">
+            <p class="field__error" id="phone-error"></p>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Доставка</legend>
+          <div class="options">
+            <label class="option">
+              <input type="radio" name="delivery" value="courier" checked>
+              <span class="option__body">
+                <span class="option__title">Курьер по Санкт&#8209;Петербургу</span>
+                <span class="option__note">Завтра, <span data-delivery-price="courier">350 ₽</span></span>
+              </span>
+            </label>
+            <label class="option">
+              <input type="radio" name="delivery" value="cdek">
+              <span class="option__body">
+                <span class="option__title">Пункт СДЭК</span>
+                <span class="option__note">2–6 дней, <span data-delivery-price="cdek">250 ₽</span></span>
+              </span>
+            </label>
+          </div>
+          <div class="field">
+            <label for="address" id="address-label">Адрес доставки</label>
+            <textarea id="address" name="address" rows="2" autocomplete="street-address" required minlength="5" aria-describedby="address-error"></textarea>
+            <p class="field__error" id="address-error"></p>
+          </div>
+        </fieldset>
+
+        <section class="order-summary" aria-labelledby="summary-title">
+          <h3 id="summary-title">Ваш заказ</h3>
+          <ul class="order-summary__list" id="summary-list"></ul>
+          <dl class="totals">
+            <div><dt>Товары</dt><dd id="summary-subtotal">0 ₽</dd></div>
+            <div><dt>Доставка</dt><dd id="summary-delivery">0 ₽</dd></div>
+            <div class="totals__grand"><dt>Итого</dt><dd id="summary-total">0 ₽</dd></div>
+          </dl>
+        </section>
+
+        <footer class="modal__footer">
+          <button class="button button--secondary" type="button" id="back-to-cart">Изменить корзину</button>
+          <button class="button button--primary" type="submit">Создать заказ</button>
+        </footer>
+      </form>
+    </div>
+
+    <div class="modal__view success" id="success-view" hidden>
+      <div class="success__flag" aria-hidden="true"></div>
+      <h2 id="success-title" tabindex="-1">Заказ создан!</h2>
+      <p id="success-text"></p>
+      <button class="button button--primary" type="button" data-close>Вернуться в магазин</button>
+    </div>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <noscript>
+    <p class="noscript">Для работы корзины включите JavaScript в браузере.</p>
+  </noscript>
+
+</body>
+</html>
