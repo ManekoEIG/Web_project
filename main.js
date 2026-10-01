@@ -1,8 +1,5 @@
 'use strict';
 
-/* =========================================================
-   Константы и утилиты
-   ========================================================= */
 const STORAGE_KEY = 'pitlane-cart';
 const FREE_DELIVERY_FROM = 7000;
 const DELIVERY_PRICES = { courier: 350, cdek: 250 };
@@ -23,10 +20,6 @@ function plural(n, forms) {
 
 const ICON_CLOSE = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>';
 
-/* =========================================================
-   Каталог: читаем товары из разметки
-   (HTML остаётся единственным источником данных о товарах)
-   ========================================================= */
 const productList = $('#product-list');
 
 const products = new Map(
@@ -38,6 +31,8 @@ const products = new Map(
       name: $('.product__title', card).textContent.trim(),
       price: Number($('.product__price data', card).value),
       image: $('.product__image', card).innerHTML,
+      // data-max="1" в HTML: сколько штук можно купить (по умолчанию 99)
+      max: Number(card.dataset.max) || 99,
       card,
       item: card.closest('li'),
       index,
@@ -45,16 +40,14 @@ const products = new Map(
   ])
 );
 
-/* =========================================================
-   Состояние корзины: { [id]: количество }
-   ========================================================= */
 const cart = {
   items: load(),
 
   get(id) { return this.items[id] || 0; },
 
   set(id, qty) {
-    if (qty > 0) this.items[id] = Math.min(qty, 99);
+    const max = products.get(id)?.max ?? 99;
+    if (qty > 0) this.items[id] = Math.min(qty, max);
     else delete this.items[id];
     save(this.items);
     render();
@@ -71,7 +64,7 @@ const cart = {
   entries() {
     return Object.entries(this.items)
       .filter(([id]) => products.has(id))
-      .map(([id, qty]) => ({ ...products.get(id), qty }));
+      .map(([id, qty]) => ({ ...products.get(id), qty: Math.min(qty, products.get(id).max) }));
   },
 
   get count() { return this.entries().reduce((sum, i) => sum + i.qty, 0); },
@@ -91,11 +84,10 @@ function save(items) {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
   } catch {
-    /* хранилище недоступно — корзина живёт до перезагрузки */
   }
 }
 
-// Синхронизация между вкладками
+
 window.addEventListener('storage', (event) => {
   if (event.key === STORAGE_KEY) {
     cart.items = load();
@@ -103,9 +95,6 @@ window.addEventListener('storage', (event) => {
   }
 });
 
-/* =========================================================
-   Отрисовка
-   ========================================================= */
 const cartCount = $('#cart-count');
 
 function render() {
@@ -116,11 +105,12 @@ function render() {
 }
 
 function stepperHTML(product, qty, small = false) {
+  const atMax = qty >= product.max;
   return `
     <div class="stepper${small ? ' stepper--small' : ''}" role="group" aria-label="Количество: ${product.name}">
       <button type="button" data-action="dec" data-id="${product.id}" aria-label="Уменьшить количество">−</button>
       <output aria-live="polite">${qty}</output>
-      <button type="button" data-action="inc" data-id="${product.id}" aria-label="Увеличить количество">+</button>
+      <button type="button" data-action="inc" data-id="${product.id}" aria-label="${atMax ? 'Больше добавить нельзя' : 'Увеличить количество'}"${atMax ? ' disabled' : ''}>+</button>
     </div>`;
 }
 
@@ -128,7 +118,6 @@ function addButtonHTML(product) {
   return `<button class="button button--primary product__add" type="button" data-action="add" data-id="${product.id}" aria-label="Добавить в корзину: ${product.name}">В корзину</button>`;
 }
 
-// Кнопка «В корзину» превращается в счётчик, когда товар уже добавлен
 function renderCards() {
   products.forEach((product) => {
     const action = $('.product__action', product.card);
@@ -137,6 +126,9 @@ function renderCards() {
 
     if (qty > 0 && hasStepper) {
       $('output', action).textContent = qty;
+      const inc = $('[data-action="inc"]', action);
+      inc.disabled = qty >= product.max;
+      inc.setAttribute('aria-label', inc.disabled ? 'Больше добавить нельзя' : 'Увеличить количество');
     } else if (qty > 0) {
       action.innerHTML = stepperHTML(product, qty);
     } else if (hasStepper || !$('[data-action]', action)) {
@@ -195,7 +187,6 @@ function renderDrawer() {
   $('#free-delivery-bar').style.width = `${Math.min(subtotal / FREE_DELIVERY_FROM, 1) * 100}%`;
 }
 
-/* ---------- Итоги в форме заказа ---------- */
 function deliveryCost() {
   if (cart.subtotal >= FREE_DELIVERY_FROM) return 0;
   const method = $('input[name="delivery"]:checked').value;
@@ -218,9 +209,7 @@ function renderSummary() {
   $('#summary-total').textContent = formatPrice(cart.subtotal + delivery);
 }
 
-/* =========================================================
-   Действия с товарами (делегирование событий)
-   ========================================================= */
+
 function handleCartAction(event) {
   const button = event.target.closest('[data-action]');
   if (!button) return;
@@ -234,6 +223,12 @@ function handleCartAction(event) {
   switch (action) {
     case 'add':
     case 'inc':
+      if (cart.get(id) >= product.max) {
+        showToast(product.max === 1
+          ? 'Это единственный экземпляр, купить можно только 1 шт.'
+          : `Можно купить не больше ${product.max} шт.`);
+        return;
+      }
       cart.add(id);
       bumpCounter();
       if (action === 'add') showToast(`${product.name} в корзине`);
@@ -249,12 +244,12 @@ function handleCartAction(event) {
       return;
   }
 
-  // Возвращаем фокус на логичное место в карточке после перерисовки
   if (inCatalog) {
     const action = $('.product__action', product.card);
-    const next = cart.get(id) > 0
+    let next = cart.get(id) > 0
       ? $(`[data-action="${button.dataset.action === 'dec' ? 'dec' : 'inc'}"]`, action)
       : $('[data-action="add"]', action);
+    if (next?.disabled) next = $('[data-action="dec"]', action);
     next?.focus();
   }
 }
@@ -268,7 +263,7 @@ function bumpCounter() {
   cartCount.classList.add('is-bumped');
 }
 
-/* ---------- Уведомление ---------- */
+
 const toast = $('#toast');
 let toastTimer;
 
@@ -279,9 +274,7 @@ function showToast(message) {
   toastTimer = setTimeout(() => toast.classList.remove('is-visible'), 2200);
 }
 
-/* =========================================================
-   Фильтры и сортировка
-   ========================================================= */
+
 const filterButtons = $$('[data-filter]');
 const sortSelect = $('#sort');
 const catalogStatus = $('#catalog-status');
@@ -315,9 +308,6 @@ filterButtons.forEach((button) => {
 
 sortSelect.addEventListener('change', applyCatalog);
 
-/* =========================================================
-   Диалоги
-   ========================================================= */
 const orderDialog = $('#order-dialog');
 let lastTrigger = null;
 
@@ -394,7 +384,7 @@ phoneInput.addEventListener('input', () => {
   // Цифры после кода страны; +7 подставляется при фокусе
   let digits = (raw.startsWith('+7') ? raw.slice(2) : raw).replace(/\D/g, '');
 
-  // Вставили номер целиком (8 900…, 7 900…, +7 900…) — отбрасываем код страны
+  // Вставили номер целиком - отбрасываем код страны
   if (digits.length === 11 && /^[78]/.test(digits)) digits = digits.slice(1);
   digits = digits.slice(0, 10);
 
@@ -415,7 +405,6 @@ phoneInput.addEventListener('blur', () => {
   if (phoneInput.value === '+7') phoneInput.value = '';
 });
 
-// Подпись адреса зависит от способа доставки
 $$('input[name="delivery"]').forEach((radio) => {
   radio.addEventListener('change', () => {
     $('#address-label').textContent = radio.value === 'cdek'
@@ -439,8 +428,6 @@ function validateField(field) {
   field.value = field.value.trimStart();
   const { validity } = field;
   let message = '';
-
-  // minlength не срабатывает для программно заданных значений — проверяем вручную
   const tooShort = field.minLength > 0 && field.value.trim().length > 0 && field.value.trim().length < field.minLength;
 
   if (validity.valueMissing || !field.value.trim()) message = rules.valueMissing;
@@ -487,8 +474,6 @@ form.addEventListener('submit', (event) => {
     delivery: deliveryCost(),
   };
   order.total = order.subtotal + order.delivery;
-
-  // Здесь будет отправка на сервер, например fetch('/api/orders', { method: 'POST', body: JSON.stringify(order) })
   console.info('Новый заказ', order);
 
   $('#success-title').textContent = 'Заказ создан!';
@@ -505,8 +490,6 @@ form.addEventListener('submit', (event) => {
   cart.clear();
 });
 
-/* =========================================================
-   Старт
-   ========================================================= */
+
 render();
 applyCatalog();
